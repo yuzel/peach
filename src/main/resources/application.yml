@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://39.104.101.199:3306/test?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
+    username: lyz
+    password: lyz
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      max-lifetime: 360000
+      connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
+      connection-test-query: SELECT 1
