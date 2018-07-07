@@ -5,7 +5,7 @@ spring:
     show-sql: true
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://www.lyz.com:3306/test?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
+    url: jdbc:mysql://39.104.101.199:3306/test?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
     username: lyz
     password: lyz
     hikari:
