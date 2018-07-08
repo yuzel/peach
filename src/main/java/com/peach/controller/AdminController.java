@@ -15,7 +15,7 @@ public class AdminController {
 
   @GetMapping("hello")
   public Result helloWorld(){
-    return Result.succ("test");
+    return Result.succ("test2");
   }
 
 }
