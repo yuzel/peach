@@ -62,20 +62,20 @@ public class DatabaseConfigurationServiceImpl implements DatabaseConfigurationSe
           DriverManager.getConnection(url, databaseConfiguration.getUserName(), databaseConfiguration.getPassword());
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(sqlStatementVO.getSql());
-      List<String> columnList = Lists.newArrayList();
+      List<String> columnList = Lists.newArrayListWithCapacity(resultSet.getMetaData().getColumnCount());
       for (int i = 1, j = resultSet.getMetaData().getColumnCount(); i <= j; i++) {
         columnList.add(resultSet.getMetaData().getColumnName(i));
       }
       while (resultSet.next()) {
+        Map<String, Object> map = Maps.newHashMap();
         columnList.forEach(columnName -> {
-          Map<String, Object> map = Maps.newHashMap();
           try {
             map.put(columnName, resultSet.getObject(columnName));
-            list.add(map);
           } catch (SQLException e) {
             e.printStackTrace();
           }
         });
+        list.add(map);
       }
       resultSet.close();
       statement.close();
