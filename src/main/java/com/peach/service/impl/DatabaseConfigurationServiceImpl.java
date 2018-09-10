@@ -65,7 +65,7 @@ public class DatabaseConfigurationServiceImpl implements DatabaseConfigurationSe
     try (Connection connection = dataSource.getConnection();
          Statement statement = connection.createStatement()) {
       if (StringUtils.startsWithIgnoreCase(sqlStatementVO.getSql().trim(), "SELECT")) {
-        return this.getExcuteQuery(sqlStatementVO, statement);
+        return this.getExecuteQuery(sqlStatementVO, statement);
       } else {
         return statement.executeUpdate(sqlStatementVO.getSql());
       }
@@ -74,7 +74,7 @@ public class DatabaseConfigurationServiceImpl implements DatabaseConfigurationSe
     }
   }
 
-  private List<Map<String, Object>> getExcuteQuery(@NonNull SqlStatementVO sqlStatementVO, Statement statement) throws SQLException {
+  private List<Map<String, Object>> getExecuteQuery(@NonNull SqlStatementVO sqlStatementVO, Statement statement) throws SQLException {
     List<Map<String, Object>> list = Lists.newArrayList();
     ResultSet resultSet = statement.executeQuery(sqlStatementVO.getSql());
     List<String> columnList = Lists.newArrayListWithCapacity(resultSet.getMetaData().getColumnCount());
