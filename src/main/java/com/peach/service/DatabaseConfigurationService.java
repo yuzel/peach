@@ -4,7 +4,6 @@ import com.peach.model.DatabaseConfiguration;
 import com.peach.vo.sql.SqlStatementVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 刘宇泽
@@ -44,6 +43,6 @@ public interface DatabaseConfigurationService {
    * sql execute
    * @param sqlStatementVO
    */
-  List<Map<String,Object>> executeSql(SqlStatementVO sqlStatementVO);
+  Object executeSql(SqlStatementVO sqlStatementVO);
 
 }

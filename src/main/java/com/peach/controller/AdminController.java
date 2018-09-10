@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -70,8 +69,8 @@ public class AdminController {
           .collect(Collectors.joining(" "));
       return Result.fail(error);
     }
-    List<Map<String, Object>> list = databaseConfigurationService.executeSql(sqlStatementVO);
-    return Result.succ(list);
+    Object result = databaseConfigurationService.executeSql(sqlStatementVO);
+    return Result.succ(result);
   }
 
 }

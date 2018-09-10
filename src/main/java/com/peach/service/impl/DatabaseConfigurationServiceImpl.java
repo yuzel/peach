@@ -2,16 +2,22 @@ package com.peach.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.peach.common.Constants;
 import com.peach.dao.DatabaseConfigurationRepository;
 import com.peach.model.DatabaseConfiguration;
 import com.peach.service.DatabaseConfigurationService;
+import com.peach.util.DateSourceFactory;
 import com.peach.vo.sql.SqlStatementVO;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -47,41 +53,44 @@ public class DatabaseConfigurationServiceImpl implements DatabaseConfigurationSe
   }
 
   @Override
-  public List<Map<String, Object>> executeSql(@NonNull SqlStatementVO sqlStatementVO) {
-    List<Map<String, Object>> list = Lists.newArrayList();
-    DatabaseConfiguration databaseConfiguration = databaseConfigurationRepository.getOne(sqlStatementVO.getId());
-    String url = String.format(Constants.DATA_BASE_URL, databaseConfiguration.getHost(),
-        databaseConfiguration.getPort(), databaseConfiguration.getDatabaseName());
+  public Object executeSql(@NonNull SqlStatementVO sqlStatementVO) {
+    DatabaseConfiguration databaseConfiguration = databaseConfigurationRepository.findById(sqlStatementVO.getId()).orElse(null);
+    Assert.notNull(databaseConfiguration, "Please set the database configuration first.");
+    DataSource dataSource = null;
     try {
-      Class.forName("com.mysql.jdbc.Driver");
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      dataSource = DateSourceFactory.getDateSource(databaseConfiguration);
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to connect to the database, please check the database configuration.");
     }
-    try {
-      Connection connection =
-          DriverManager.getConnection(url, databaseConfiguration.getUserName(), databaseConfiguration.getPassword());
-      Statement statement = connection.createStatement();
-      ResultSet resultSet = statement.executeQuery(sqlStatementVO.getSql());
-      List<String> columnList = Lists.newArrayListWithCapacity(resultSet.getMetaData().getColumnCount());
-      for (int i = 1, j = resultSet.getMetaData().getColumnCount(); i <= j; i++) {
-        columnList.add(resultSet.getMetaData().getColumnName(i));
+    try (Connection connection = dataSource.getConnection();
+         Statement statement = connection.createStatement()) {
+      if (StringUtils.startsWithIgnoreCase(sqlStatementVO.getSql().trim(), "SELECT")) {
+        return this.getExcuteQuery(sqlStatementVO, statement);
+      } else {
+        return statement.executeUpdate(sqlStatementVO.getSql());
       }
-      while (resultSet.next()) {
-        Map<String, Object> map = Maps.newHashMap();
-        columnList.forEach(columnName -> {
-          try {
-            map.put(columnName, resultSet.getObject(columnName));
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
-        });
-        list.add(map);
-      }
-      resultSet.close();
-      statement.close();
-      connection.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      throw new IllegalArgumentException(String.format("Unable to execute sql, please check if sql is feasible.error:%s", e.getMessage()));
+    }
+  }
+
+  private List<Map<String, Object>> getExcuteQuery(@NonNull SqlStatementVO sqlStatementVO, Statement statement) throws SQLException {
+    List<Map<String, Object>> list = Lists.newArrayList();
+    ResultSet resultSet = statement.executeQuery(sqlStatementVO.getSql());
+    List<String> columnList = Lists.newArrayListWithCapacity(resultSet.getMetaData().getColumnCount());
+    for (int i = 1, j = resultSet.getMetaData().getColumnCount(); i <= j; i++) {
+      columnList.add(resultSet.getMetaData().getColumnName(i));
+    }
+    while (resultSet.next()) {
+      Map<String, Object> map = Maps.newHashMapWithExpectedSize(resultSet.getMetaData().getColumnCount());
+      columnList.forEach(columnName -> {
+        try {
+          map.put(columnName, resultSet.getObject(columnName));
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      });
+      list.add(map);
     }
     return list;
   }
