@@ -6,8 +6,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/peach?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
-    username: lyz
-    password: lyz
+    username: root
+    password:
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10
