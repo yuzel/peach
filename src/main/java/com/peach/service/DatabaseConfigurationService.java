@@ -13,6 +13,7 @@ public interface DatabaseConfigurationService {
 
   /**
    * save
+   *
    * @param databaseConfiguration
    * @return
    */
@@ -20,27 +21,39 @@ public interface DatabaseConfigurationService {
 
   /**
    * update
+   *
    * @param id
    * @param databaseConfiguration
    * @return
    */
-  DatabaseConfiguration update(Integer id,DatabaseConfiguration databaseConfiguration);
+  DatabaseConfiguration update(Integer id, DatabaseConfiguration databaseConfiguration);
 
   /**
    * info
+   *
    * @param id
    * @return
    */
   DatabaseConfiguration getDatabaseConfigurationInfo(Integer id);
 
   /**
+   * delete
+   *
+   * @param id
+   * @return
+   */
+  void deleteDatabaseConfigurationInfo(Integer id);
+
+  /**
    * list
+   *
    * @return
    */
   List<DatabaseConfiguration> listDatabaseConfiguration();
 
   /**
    * sql execute
+   *
    * @param sqlStatementVO
    */
   Object executeSql(SqlStatementVO sqlStatementVO);

@@ -48,6 +48,13 @@ public class DatabaseConfigurationServiceImpl implements DatabaseConfigurationSe
   }
 
   @Override
+  public void deleteDatabaseConfigurationInfo(Integer id) {
+    DatabaseConfiguration databaseConfiguration = databaseConfigurationRepository.findById(id).orElse(null);
+    Assert.notNull(databaseConfiguration, "Please set the database configuration first.");
+    DateSourceFactory.removeDateSource(databaseConfiguration);
+  }
+
+  @Override
   public List<DatabaseConfiguration> listDatabaseConfiguration() {
     return databaseConfigurationRepository.findAll();
   }

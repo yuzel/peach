@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("admin_api/v1/")
-public class AdminController {
+public class DatabaseConfigurationController {
 
   @Autowired
   private DatabaseConfigurationService databaseConfigurationService;
@@ -53,6 +53,12 @@ public class AdminController {
   public Result getDatabaseConfiguration(@PathVariable("id") Integer id) {
     DatabaseConfiguration result = databaseConfigurationService.getDatabaseConfigurationInfo(id);
     return Result.succ(result);
+  }
+
+  @DeleteMapping("database_configuration/{id}")
+  public Result deleteDatabaseConfiguration(@PathVariable("id") Integer id) {
+    databaseConfigurationService.deleteDatabaseConfigurationInfo(id);
+    return Result.succ();
   }
 
   @GetMapping("database_configurations")

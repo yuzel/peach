@@ -6,7 +6,6 @@ import com.peach.model.DatabaseConfiguration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -15,12 +14,12 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DateSourceFactory {
 
-  private static ConcurrentMap<String, DataSource> dataSourceMap = Maps.newConcurrentMap();
+  private static ConcurrentMap<String, HikariDataSource> dataSourceMap = Maps.newConcurrentMap();
 
-  public static DataSource getDateSource(DatabaseConfiguration databaseConfiguration) {
+  public static HikariDataSource getDateSource(DatabaseConfiguration databaseConfiguration) {
     String url = String.format(Constants.DATA_BASE_URL, databaseConfiguration.getHost(),
         databaseConfiguration.getPort(), databaseConfiguration.getDatabaseName());
-    if(dataSourceMap.containsKey(url)){
+    if (dataSourceMap.containsKey(url)) {
       return dataSourceMap.get(url);
     }
     HikariConfig config = new HikariConfig();
@@ -31,9 +30,17 @@ public class DateSourceFactory {
     config.setJdbcUrl(url);
     config.setUsername(databaseConfiguration.getUserName());
     config.setPassword(databaseConfiguration.getPassword());
-    DataSource dataSource = new HikariDataSource(config);
-    dataSourceMap.putIfAbsent(url,dataSource);
+    HikariDataSource dataSource = new HikariDataSource(config);
+    dataSourceMap.putIfAbsent(url, dataSource);
     return dataSource;
+  }
+
+  public static void removeDateSource(DatabaseConfiguration databaseConfiguration) {
+    String url = String.format(Constants.DATA_BASE_URL, databaseConfiguration.getHost(),
+        databaseConfiguration.getPort(), databaseConfiguration.getDatabaseName());
+    HikariDataSource dataSource = dataSourceMap.get(url);
+    dataSource.close();
+    dataSourceMap.remove(url);
   }
 
 }
