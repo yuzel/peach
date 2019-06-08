@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
  * @date 2018/9/9
  */
 @Data
-public class SqlStatementVO {
+public class SqlStatement {
 
   @NotBlank(message = "sql must not null.")
   private String sql;

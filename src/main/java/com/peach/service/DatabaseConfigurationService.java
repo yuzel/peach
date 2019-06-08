@@ -1,9 +1,11 @@
 package com.peach.service;
 
 import com.peach.model.DatabaseConfiguration;
-import com.peach.vo.sql.SqlStatementVO;
+import com.peach.vo.sql.SqlMetaData;
+import com.peach.vo.sql.SqlStatement;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 刘宇泽
@@ -37,6 +39,14 @@ public interface DatabaseConfigurationService {
   DatabaseConfiguration getDatabaseConfigurationInfo(Integer id);
 
   /**
+   * 获取元数据
+   *
+   * @param id
+   * @return
+   */
+  Map<String, List<SqlMetaData>> getDatabaseConfigurationMetadata(Integer id);
+
+  /**
    * delete
    *
    * @param id
@@ -54,8 +64,8 @@ public interface DatabaseConfigurationService {
   /**
    * sql execute
    *
-   * @param sqlStatementVO
+   * @param sqlStatement
    */
-  Object executeSql(SqlStatementVO sqlStatementVO);
+  Object executeSql(SqlStatement sqlStatement);
 
 }
